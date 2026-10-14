@@ -1,0 +1,22 @@
+# Zugangsdaten – nie committen
+.env
+
+# Medien-Uploads nicht versionieren (nur Ordner behalten)
+wordpress/wp-content/uploads/*
+!wordpress/wp-content/uploads/.gitkeep
+
+# Von WordPress automatisch angelegte Standard-Dateien (nur eigene Plugins/Themes versionieren)
+wordpress/wp-content/index.php
+wordpress/wp-content/upgrade/
+wordpress/wp-content/languages/
+wordpress/wp-content/plugins/index.php
+wordpress/wp-content/plugins/akismet/
+wordpress/wp-content/plugins/hello.php
+wordpress/wp-content/themes/index.php
+wordpress/wp-content/themes/twenty*/
+
+# Betriebssystem / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
