@@ -5,6 +5,36 @@ Entwicklung und Konfiguration finden hier statt – **nicht** mehr am produktive
 
 **Team KPA:** Eren Kesik, Christofer Pütz, Wissam Alsafori
 
+## Kurzanleitung
+
+1. **Docker Desktop** installieren und starten (unten links muss „Engine running“ stehen).
+2. **Repository herunterladen:** Terminal öffnen und eingeben:
+   ```bash
+   git clone https://github.com/BKUerdingen/wp-int-KPA.git
+   cd wp-int-KPA
+   ```
+3. **Zugangsdaten anlegen:** Die Datei `.env.example` kopieren und die Kopie `.env` nennen
+   (`copy .env.example .env`). In der `.env` bei `DB_PASSWORD` und `DB_ROOT_PASSWORD` eigene Passwörter eintragen.
+4. **Starten:**
+   ```bash
+   docker compose up -d
+   ```
+   Beim ersten Mal dauert es etwa 1 Minute, bis alles läuft.
+5. **Im Browser öffnen:**
+   - WordPress: http://localhost:8080 → Sprache wählen und WordPress einrichten
+   - phpMyAdmin: http://localhost:8081 → Anmelden mit `DB_USER` und `DB_PASSWORD` aus der `.env`
+6. **Arbeiten:** Eigene Plugins und Themes in `wordpress/wp-content/plugins` bzw. `themes` ablegen – sie sind sofort in WordPress sichtbar.
+7. **Beenden:**
+   ```bash
+   docker compose down
+   ```
+   Die Daten bleiben erhalten und sind beim nächsten `docker compose up -d` wieder da.
+
+**Probleme?**
+- *Port belegt:* In der `.env` `WP_PORT` bzw. `PMA_PORT` ändern (z. B. 8090).
+- *„Virtualization support not detected“:* Als Administrator `wsl --install --no-distribution` ausführen und den PC neu starten.
+- *Alles zurücksetzen (löscht die Datenbank!):* `docker compose down -v`
+
 ## Aufbau
 
 | Service | Image | Aufgabe | Erreichbar unter |
