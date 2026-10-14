@@ -1,0 +1,57 @@
+# Lokale WordPress-Entwicklungsumgebung (Team KPA)
+# Start:  docker compose up -d
+# Stopp:  docker compose down        (Daten bleiben im Volume db_data erhalten)
+
+services:
+  db:
+    image: mariadb:11.4
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql            # Named Volume -> Datenbank bleibt erhalten
+    healthcheck:
+      # Skript ist im offiziellen MariaDB-Image enthalten
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    # kein Port nach außen: WordPress und phpMyAdmin erreichen die DB über das Compose-Netzwerk
+
+  wordpress:
+    image: wordpress:6-php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy        # WordPress startet erst, wenn die DB "healthy" ist
+    ports:
+      - "${WP_PORT:-8080}:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX:-wp_}
+      WORDPRESS_DEBUG: ${WP_DEBUG:-1}
+    volumes:
+      - ./wordpress/wp-content:/var/www/html/wp-content   # Bind-Mount: Sync Host <-> Container
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy        # phpMyAdmin hängt von der DB ab
+    ports:
+      - "${PMA_PORT:-8081}:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 64M
+
+volumes:
+  db_data:
